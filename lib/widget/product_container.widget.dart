@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:webinar_23_jul/product-detail.screen.dart';
 
 import '../model/product.model.dart';
 
@@ -29,6 +30,16 @@ class ProductContainer extends StatelessWidget {
         ),
         tileColor: Colors.cyan.shade50,
         title: Text(product.title),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailsScreen(
+                product: product,
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -1,39 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:webinar_23_jul/service/product.service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:webinar_23_jul/data/product.repository.dart';
 import 'package:webinar_23_jul/widget/product_container.widget.dart';
 
 import 'model/product.model.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends StatelessWidget {
   List<Product> products = [];
   List<Product> filteredProducts = [];
   _HomeScreenState() {
-    fetchProducts();
+    // fetchProducts();
   }
 
-  fetchProducts() async {
-    try {
-      products = await getProducts();
-      filteredProducts = products;
-      setState(() {});
-    } catch (e) {
-      print(e);
-    }
-  }
+  // fetchProducts() async {
+  //   try {
+  //     products = await getProducts();
+  //     filteredProducts = products;
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
-  filter(String keyword) {
-    filteredProducts = products
-        .where((product) =>
-            product.title.toLowerCase().contains(keyword.toLowerCase()))
-        .toList();
-  }
+  // filter(String keyword) {
+  //   filteredProducts = products
+  //       .where((product) =>
+  //           product.title.toLowerCase().contains(keyword.toLowerCase()))
+  //       .toList();
+  // }
 
   final TextEditingController searchController = TextEditingController();
 
@@ -48,20 +41,25 @@ class _HomeScreenState extends State<HomeScreen> {
             child: TextField(
               controller: searchController,
               onChanged: (value) {
-                filter(value);
-                setState(() {});
+                // filter(value);
               },
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredProducts.length,
-              itemBuilder: (context, i) {
-                Product product = filteredProducts[i];
-                return ProductContainer(product: product);
-              },
-            ),
-          ),
+          Consumer(builder: ((context, ref, child) {
+            final list = ref.watch(productListProvider);
+            return list.when(
+                data: ((list) => Expanded(
+                      child: ListView.builder(
+                        itemCount: list.length,
+                        itemBuilder: (context, i) {
+                          Product product = list[i];
+                          return ProductContainer(product: product);
+                        },
+                      ),
+                    )),
+                error: ((error, stackTrace) => Container()),
+                loading: () => const CircularProgressIndicator());
+          })),
         ],
       ),
     );
